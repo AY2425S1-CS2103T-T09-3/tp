@@ -13,6 +13,10 @@ public class Remark {
         value = remark;
     }
 
+    public static boolean isValidRemark(String trimmedRemark) {
+        return true; // all types of remarks are allowed
+    }
+
     @Override
     public String toString() {
         return value;
