@@ -1,11 +1,11 @@
 package seedu.address.model.person;
 
-import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
@@ -25,88 +25,52 @@ public class Person {
     private final Name name;
     private final Phone phone;
     private final Email email;
+    private final Remark remark;
 
     // Data fields
     private final Address address;
     private final Set<Tag> tags = new HashSet<>();
     private final Set<Appointment> appointments = new HashSet<>();
 
-    // Doctor-specific data fields
-    private final Speciality speciality;
-
-    // Patient-specific data fields
-    private final DateOfBirth dateOfBirth;
-    private final Gender gender;
+    // Optional fields
+    private final Optional<Speciality> speciality;
+    private final Optional<DateOfBirth> dateOfBirth;
+    private final Optional<Gender> gender;
 
     /**
-     * Constructor to initialize all fields. Only person fields must not be null.
+     * Main constructor with optional fields.
      */
     public Person(
-        Name name,
-        Phone phone,
-        Email email,
-        Address address,
-        Speciality speciality,
-        DateOfBirth dateOfBirth,
-        Gender gender,
-        Set<Tag> tags
+            Name name,
+            Phone phone,
+            Email email,
+            Address address,
+            Remark remark,
+            Optional<Speciality> speciality,
+            Optional<DateOfBirth> dateOfBirth,
+            Optional<Gender> gender,
+            Set<Tag> tags
     ) {
-        requireAllNonNull(name, phone, email, address, tags);
+        requireAllNonNull(name, phone, email, address, remark, tags);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
+        this.remark = remark;
+        this.speciality = speciality != null ? speciality : Optional.empty();
+        this.dateOfBirth = dateOfBirth != null ? dateOfBirth : Optional.empty();
+        this.gender = gender != null ? gender : Optional.empty();
         this.tags.addAll(tags);
-
-        this.speciality = speciality;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
     }
 
     /**
-     * Constructor with the person fields.
+     * Constructor with required person fields only.
      */
-    public Person(
-        Name name,
-        Phone phone,
-        Email email,
-        Address address,
-        Set<Tag> tags
-    ) {
-        this(name, phone, email, address, null, null, null, tags);
+    public Person(Name name, Phone phone, Email email, Address address, Remark remark, Set<Tag> tags) {
+        this(name, phone, email, address, remark, Optional.empty(), Optional.empty(), Optional.empty(), tags);
     }
 
-    /**
-     * Constructor with the speciality field.
-     */
-    public Person(
-        Name name,
-        Phone phone,
-        Email email,
-        Address address,
-        Speciality speciality,
-        Set<Tag> tags
-    ) {
-        this(name, phone, email, address, speciality, null, null, tags);
-        requireNonNull(speciality);
-    }
-
-    /**
-     * Constructor with the dateOfBirth and gender fields.
-     */
-    public Person(
-        Name name,
-        Phone phone,
-        Email email,
-        Address address,
-        DateOfBirth dateOfBirth,
-        Gender gender,
-        Set<Tag> tags
-    ) {
-        this(name, phone, email, address, null, dateOfBirth, gender, tags);
-        requireAllNonNull(dateOfBirth, gender);
-    }
-
+    // Getters for identity fields
     public Name getName() {
         return name;
     }
@@ -123,15 +87,20 @@ public class Person {
         return address;
     }
 
-    public Speciality getSpeciality() {
+    public Remark getRemark() {
+        return remark;
+    }
+
+    // Getters for optional fields
+    public Optional<Speciality> getSpeciality() {
         return speciality;
     }
 
-    public DateOfBirth getDateOfBirth() {
+    public Optional<DateOfBirth> getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public Gender getGender() {
+    public Optional<Gender> getGender() {
         return gender;
     }
 
@@ -152,7 +121,7 @@ public class Person {
     }
 
     /**
-     * Add an appointment to the set of appointments.
+     * Adds an appointment to the set of appointments.
      * @param appointment The appointment to add.
      * @return Whether the set did not already contain the appointment.
      */
@@ -161,7 +130,7 @@ public class Person {
     }
 
     /**
-     * Remove an appointment from the set of appointments.
+     * Removes an appointment from the set of appointments.
      * @param appointment The appointment to remove.
      * @return Whether the appointment was removed.
      */
@@ -192,7 +161,6 @@ public class Person {
             return true;
         }
 
-        // instanceof handles nulls
         if (!(other instanceof Person)) {
             return false;
         }
@@ -207,7 +175,6 @@ public class Person {
 
     @Override
     public int hashCode() {
-        // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name, phone, email, address, tags);
     }
 
@@ -219,7 +186,9 @@ public class Person {
                 .add("email", email)
                 .add("address", address)
                 .add("tags", tags)
+                .add("speciality", speciality.orElse(null))
+                .add("dateOfBirth", dateOfBirth.orElse(null))
+                .add("gender", gender.orElse(null))
                 .toString();
     }
-
 }
